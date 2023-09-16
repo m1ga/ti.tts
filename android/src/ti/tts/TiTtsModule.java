@@ -27,7 +27,6 @@ import java.util.Locale;
 @Kroll.module(name = "TiTts", id = "ti.tts")
 public class TiTtsModule extends KrollModule {
 
-    private static final String LCAT = "TiTtsModule";
     TextToSpeech tts;
 
     public TiTtsModule() {
@@ -81,7 +80,6 @@ public class TiTtsModule extends KrollModule {
         }
     }
 
-    @SuppressLint("NewApi")
     @Kroll.method
     public void init() {
         tts = new TextToSpeech(TiApplication.getAppCurrentActivity(), status -> {
@@ -89,7 +87,6 @@ public class TiTtsModule extends KrollModule {
         });
     }
 
-    @SuppressLint("NewApi")
     @Kroll.method
     public void speak(String value) {
         tts.speak(value, TextToSpeech.QUEUE_ADD, null);
