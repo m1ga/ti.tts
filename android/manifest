@@ -1,0 +1,18 @@
+#
+# this is your module manifest and used by Titanium
+# during compilation, packaging, distribution, etc.
+#
+version: 1.0.0
+apiversion: 4
+architectures: arm64-v8a armeabi-v7a x86 x86_64
+description: ti.tts
+author: Your Name
+license: Specify your license
+copyright: Copyright (c) 2023 by Your Company
+
+# these should not be edited
+name: ti.tts
+moduleid: ti.tts
+guid: d61f7c88-f881-465d-ad3b-ff798b47afc9
+platform: android
+minsdk: 12.1.2.GA
