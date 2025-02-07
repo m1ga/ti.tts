@@ -28,6 +28,7 @@ import java.util.Locale;
 public class TiTtsModule extends KrollModule {
 
     private static final String LCAT = "TiTtsModule";
+    private static final String defaultID = "utteranceID";
     TextToSpeech tts;
 
     public TiTtsModule() {
@@ -94,23 +95,20 @@ public class TiTtsModule extends KrollModule {
 
     @SuppressLint("NewApi")
     @Kroll.method
-    public void speak(String value, @Kroll.argument(optional = true) String uid, @Kroll.argument(optional = true) String mode) {
-        if (uid == null) uid="TTS.uniqueID";
-        mode=mode.toLowerCase();
-        int quem = ((mode != null) && (mode.equals("flush") || mode.equals("f"))) ? TextToSpeech.QUEUE_FLUSH : TextToSpeech.QUEUE_ADD;
-        tts.speak(value, quem, null, uid);
-    }
-
-    @SuppressLint("NewApi")
-    @Kroll.method
-    public void speak3D(String value, float vol, float pan, @Kroll.argument(optional = true) String uid, @Kroll.argument(optional = true) String mode) {
-        Bundle params = new Bundle();
-        params.putFloat(TextToSpeech.Engine.KEY_PARAM_VOLUME, vol); // Volume da 0.0 a 1.0
-        params.putFloat(TextToSpeech.Engine.KEY_PARAM_PAN, pan); // Pan da -1.0 (sinistra) a 1.0 (destra)
-        if (uid == null) uid="TTS.uniqueID";
-        mode=mode.toLowerCase();
-        int quem = ((mode != null) && (mode.equals("flush") || mode.equals("f"))) ? TextToSpeech.QUEUE_FLUSH : TextToSpeech.QUEUE_ADD;
-        tts.speak(value, quem, null, uid);
+       
+    public void speak(KrollDict params) {
+        String value = params.getString("text");
+        String uid = params.optString("uid", TiTtsModule.defaultID);
+        int mode = params.optBoolean("flush",false) ? TextToSpeech.QUEUE_FLUSH : TextToSpeech.QUEUE_ADD;
+        Bundle bundle = null;
+        if (params.containsKey("volume")||params.containsKey("pan") ) {
+         bundle=new Bundle();
+         if (params.containsKey("volume"))
+          bundle.putFloat(TextToSpeech.Engine.KEY_PARAM_VOLUME, params.getDouble("volume").floatValue()); // [ from 0.0 to 1.0 ]
+         if (params.containsKey("pan"))
+          bundle.putFloat(TextToSpeech.Engine.KEY_PARAM_PAN, params.getDouble("pan").floatValue()); // [ from -1.0 to 1.0 ]
+        }
+        tts.speak(value, mode, bundle, uid);
     }
 
     @SuppressLint("NewApi")
@@ -133,18 +131,25 @@ public class TiTtsModule extends KrollModule {
 
     @SuppressLint("NewApi")
     @Kroll.method
-    public String synthesizeToFile(String value, @Kroll.argument(optional = true) String uid, @Kroll.argument(optional = true) String fileName) {
+    public String synthesizeToFile(KrollDict params) {
+        String value = params.getString("text");
+        String uid = params.optString("uid", TiTtsModule.defaultID);
+        String fileName = params.optString("filename", System.currentTimeMillis() + ".wav");
+        Bundle bundle = new Bundle();
+//        bundleTts.putString(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, fileName);
+        bundle.putString(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, uid);
+        if (params.containsKey("volume")||params.containsKey("pan") ) {
+         bundle=new Bundle();
+         if (params.containsKey("volume"))
+          bundle.putFloat(TextToSpeech.Engine.KEY_PARAM_VOLUME, params.getDouble("volume").floatValue()); // [ from 0.0 to 1.0 ]
+         if (params.containsKey("pan"))
+          bundle.putFloat(TextToSpeech.Engine.KEY_PARAM_PAN, params.getDouble("pan").floatValue()); // [ from -1.0 to 1.0 ]
+        }
 
-        if (uid == null) uid="TTS.uniqueID";
-        if (fileName == null) fileName=System.currentTimeMillis() + ".wav";
-
-        Bundle bundleTts = new Bundle();
-/**        bundleTts.putString(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, fileName); */
-        bundleTts.putString(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, uid);
 
         try {
             TiBaseFile outfile = TiFileFactory.createTitaniumFile(fileName, true);
-            tts.synthesizeToFile(value, bundleTts, outfile.getNativeFile(), uid);
+            tts.synthesizeToFile(value, bundle, outfile.getNativeFile(), uid);
             return outfile.nativePath(); // absolutePath? 
         } catch (Exception e) {
             return null;
