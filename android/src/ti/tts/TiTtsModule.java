@@ -27,12 +27,12 @@ import java.util.Locale;
 @Kroll.module(name = "TiTts", id = "ti.tts")
 public class TiTtsModule extends KrollModule {
 
+    private static final String LCAT = "TiTtsModule";
     TextToSpeech tts;
 
     public TiTtsModule() {
         super();
     }
-
 
     @Kroll.onAppCreate
     public static void onAppCreate(TiApplication app) {
@@ -42,14 +42,16 @@ public class TiTtsModule extends KrollModule {
     @Kroll.method
     public String getVoices(@Kroll.argument(optional = true) String value) {
         String out = "";
+        String cnc = "";
         for (Voice tmpVoice : tts.getVoices()) {
             if (value != null) {
                 if (tmpVoice.getName().contains(value)) {
-                    out += tmpVoice.getName() + "|";
+                    out += cnc + tmpVoice.getName();
                 }
             } else {
-                out += tmpVoice.getName() + "|";
+                out += cnc + tmpVoice.getName();
             }
+            cnc="|";
         }
         return out;
     }
@@ -80,58 +82,129 @@ public class TiTtsModule extends KrollModule {
         }
     }
 
+    @SuppressLint("NewApi")
     @Kroll.method
     public void init() {
         tts = new TextToSpeech(TiApplication.getAppCurrentActivity(), status -> {
-            fireEvent("init", new KrollDict());
+            KrollDict kd = new KrollDict();
+            kd.put("status", status);
+            fireEvent("init", kd);
         });
     }
 
+    @SuppressLint("NewApi")
     @Kroll.method
-    public void speak(String value) {
-        tts.speak(value, TextToSpeech.QUEUE_ADD, null);
+    public void speak(String value, @Kroll.argument(optional = true) String uid, @Kroll.argument(optional = true) String mode) {
+        if (uid == null) uid="TTS.uniqueID";
+        mode=mode.toLowerCase();
+        int quem = ((mode != null) && (mode.equals("flush") || mode.equals("f"))) ? TextToSpeech.QUEUE_FLUSH : TextToSpeech.QUEUE_ADD;
+        tts.speak(value, quem, null, uid);
     }
 
+    @SuppressLint("NewApi")
+    @Kroll.method
+    public void speak3D(String value, float vol, float pan, @Kroll.argument(optional = true) String uid, @Kroll.argument(optional = true) String mode) {
+        Bundle params = new Bundle();
+        params.putFloat(TextToSpeech.Engine.KEY_PARAM_VOLUME, vol); // Volume da 0.0 a 1.0
+        params.putFloat(TextToSpeech.Engine.KEY_PARAM_PAN, pan); // Pan da -1.0 (sinistra) a 1.0 (destra)
+        if (uid == null) uid="TTS.uniqueID";
+        mode=mode.toLowerCase();
+        int quem = ((mode != null) && (mode.equals("flush") || mode.equals("f"))) ? TextToSpeech.QUEUE_FLUSH : TextToSpeech.QUEUE_ADD;
+        tts.speak(value, quem, null, uid);
+    }
 
     @SuppressLint("NewApi")
     @Kroll.setProperty
     public void setLanguage(String value) {
         tts.setLanguage(Locale.forLanguageTag(value));
     }
+    
+    @SuppressLint("NewApi")
+    @Kroll.getProperty
+    public int getBufferlen() {
+        return TextToSpeech.getMaxSpeechInputLength();
+    }
+    
+    @SuppressLint("NewApi")
+    @Kroll.getProperty
+    public boolean getSpeaking() {
+        return tts.isSpeaking();
+    }
 
     @SuppressLint("NewApi")
     @Kroll.method
-    public void synthesizeToFile(String value) {
+    public String synthesizeToFile(String value, @Kroll.argument(optional = true) String uid, @Kroll.argument(optional = true) String fileName) {
+
+        if (uid == null) uid="TTS.uniqueID";
+        if (fileName == null) fileName=System.currentTimeMillis() + ".wav";
 
         Bundle bundleTts = new Bundle();
-        String fileName = System.currentTimeMillis() + ".wav";
-        bundleTts.putString(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, fileName);
+/**        bundleTts.putString(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, fileName); */
+        bundleTts.putString(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, uid);
 
         try {
             TiBaseFile outfile = TiFileFactory.createTitaniumFile(fileName, true);
+            tts.synthesizeToFile(value, bundleTts, outfile.getNativeFile(), uid);
+            return outfile.nativePath(); // absolutePath? 
+        } catch (Exception e) {
+            return null;
+        }
+    }
 
-            tts.setOnUtteranceProgressListener(new UtteranceProgressListener() {
+    @SuppressLint("NewApi")
+    @Kroll.method
+    public int emitEvents() {
+        return tts.setOnUtteranceProgressListener(new UtteranceProgressListener() {
                 @Override
                 public void onStart(String utteranceId) {
-
+                    KrollDict kd = new KrollDict();
+                    kd.put("id", utteranceId);
+                    fireEvent("start", kd);
                 }
 
                 @Override
                 public void onDone(String utteranceId) {
                     KrollDict kd = new KrollDict();
-                    kd.put("blob", TiBlob.blobFromFile(outfile));
+                    kd.put("id", utteranceId);
                     fireEvent("done", kd);
                 }
 
                 @Override
-                public void onError(String utteranceId) {
+                public void onError(String utteranceId, int code) {
+                    KrollDict kd = new KrollDict();
+                    kd.put("id", utteranceId);
+                    kd.put("code", code);
+                    fireEvent("error", kd);
+                }
 
+                @Override
+                @Deprecated
+                public void onError(String utteranceId) {
+                    KrollDict kd = new KrollDict();
+                    kd.put("id", utteranceId);
+                    fireEvent("error", kd);
+                }
+
+                @Override
+                public void onStop(String utteranceId, boolean interrupted) {
+                    KrollDict kd = new KrollDict();
+                    kd.put("id", utteranceId);
+                    kd.put("interrupted", interrupted);
+                    fireEvent("stop", kd);
                 }
             });
-            tts.synthesizeToFile(value, bundleTts, outfile.getNativeFile(), "1");
-        } catch (Exception e) {
+    }
+    
+    @SuppressLint("NewApi")
+    @Kroll.method
+    public void shutdown() {
+        tts.shutdown();
+    }
 
-        }
+    @SuppressLint("NewApi")
+    @Kroll.method
+    public int stop() {
+        return tts.stop();
     }
 
 }
