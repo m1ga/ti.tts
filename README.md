@@ -25,10 +25,10 @@ Simple tts (text-to-speech) module for Titanium SDK. Allows you to say a sentenc
 
 ## Events
 
--   <b>init</b>: when TTS is ready
--   <b>stop</b>: when TTS stops
--   <b>error</b>: when TTS fails
--   <b>done</b>: when TTS has done (includes `blob` with the sound file if available)
+-   <b>init</b>: when TTS is ready - CallBack({ status: string })
+-   <b>stop</b>: when TTS stops - CallBack({ id: string, interrupted: boolean })
+-   <b>error</b>: when TTS fails - CallBack({ id: string, code: int })
+-   <b>done</b>: when TTS has done (Can include a Blob for SynthToFile)- CallBack({ id: string, blob: Blob })
 
 ## Voices' names
 
