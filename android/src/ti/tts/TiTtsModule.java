@@ -29,6 +29,9 @@ public class TiTtsModule extends KrollModule {
 
     private static final String LCAT = "TiTtsModule";
     private static final String defaultID = "utteranceID";
+    private String lastBlobId = null;
+    private TiBlob lastBlob;
+    
     TextToSpeech tts;
 
     public TiTtsModule() {
@@ -136,21 +139,20 @@ public class TiTtsModule extends KrollModule {
         String uid = params.optString("uid", TiTtsModule.defaultID);
         String fileName = params.optString("filename", System.currentTimeMillis() + ".wav");
         Bundle bundle = new Bundle();
-//        bundleTts.putString(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, fileName);
         bundle.putString(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, uid);
-        if (params.containsKey("volume")||params.containsKey("pan") ) {
+        if ( params.containsKey("volume") || params.containsKey("pan") ) {
          bundle=new Bundle();
          if (params.containsKey("volume"))
           bundle.putFloat(TextToSpeech.Engine.KEY_PARAM_VOLUME, params.getDouble("volume").floatValue()); // [ from 0.0 to 1.0 ]
          if (params.containsKey("pan"))
           bundle.putFloat(TextToSpeech.Engine.KEY_PARAM_PAN, params.getDouble("pan").floatValue()); // [ from -1.0 to 1.0 ]
         }
-
-
         try {
             TiBaseFile outfile = TiFileFactory.createTitaniumFile(fileName, true);
             tts.synthesizeToFile(value, bundle, outfile.getNativeFile(), uid);
-            return outfile.nativePath(); // absolutePath? 
+            lastBlobId = uid;
+            lastBlob = TiBlob.blobFromFile(outfile);
+            return outfile.nativePath();
         } catch (Exception e) {
             return null;
         }
@@ -171,6 +173,10 @@ public class TiTtsModule extends KrollModule {
                 public void onDone(String utteranceId) {
                     KrollDict kd = new KrollDict();
                     kd.put("id", utteranceId);
+                    if (utteranceId.equals(lastBlobId))
+                     kd.put("blob", lastBlob);
+                    lastBlob=null;
+                    lastBlobId=null;
                     fireEvent("done", kd);
                 }
 
