@@ -9,6 +9,7 @@ Simple tts (text-to-speech) module for Titanium SDK. Allows you to say a sentenc
 -   <b>synthesizeToFile({text:string,filename:string})</b>
 -   <b>stop()</b>
 -   <b>shutdown()</b>
+-   <b>getVoices(filter:string)</b> - Returns a string with voices separated by a `|`. Optionally you can pass in a string to filter on voices names, for example `de-de` to only get German voices. Voices are in the fromat <lang>-<region>-x-<flags>-<type>, where lang and region are 2 char codes, flags is a usually 3 cahr voice description, and type can be local (on device voice), network (on cloud voice) or language (not specified).
 
 ## Properties
 
@@ -17,13 +18,14 @@ Simple tts (text-to-speech) module for Titanium SDK. Allows you to say a sentenc
 -   <b>voices</b> (getter): string. Returns a string with voices separated by a `|`. Optional you can pass in `de-de` to only get German voices.
 -   <b>voice</b> (setter): string
 -   <b>language</b> (setter): string. e.g. `de` or `en`
+-   <b>speaking</b> (getter): boolean. (DO NOT RELY ON THIS!)
 
 ## Events
 
--   <b>init()</b>: when TTS is ready
--   <b>stop()</b>: when TTS stops
--   <b>error()</b>: when TTS fails
--   <b>done()</b>: when TTS has done (returns `blob` with the sound file if available)
+-   <b>init</b>: when TTS is ready
+-   <b>stop</b>: when TTS stops
+-   <b>error</b>: when TTS fails
+-   <b>done</b>: when TTS has done (includes `blob` with the sound file if available)
 
 ## Example
 
