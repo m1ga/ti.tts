@@ -58,7 +58,7 @@ tts.addEventListener("init", function(e) {
 ```
 
 
-## Author
+## Authors
 
 * Michael Gangolf (<a href="https://github.com/m1ga">@MichaelGangolf</a> / <a href="https://www.migaweb.de">Web</a>)
 * T. A. (<a href="https://github.com/informate">@TA</a> / <a href="https://www.informate.it">Web</a>)
