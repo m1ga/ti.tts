@@ -20,7 +20,7 @@ Simple tts (text-to-speech) module for Titanium SDK. Allows you to say a sentenc
 -   <b>voices</b> (getter): string. Returns a string with voices separated by a `|`. Optional you can pass in `de-de` to only get German voices.
 -   <b>voice</b> (setter): string
 -   <b>language</b> (setter): string. e.g. `de` or `en`
--   <b>speaking</b> (getter): boolean. (DO NOT RELY ON THIS!)
+-   <b>speaking</b> (getter): boolean. (DO NOT RELY ON THIS ON INIT! YOU COULD NEED TO STAR FLUSHING THE QUEQUE ATFTER INIT. )
 -   <b>bufferlen</b> (getter): int. Maximum length of the text string to read (Usually 4000 character)
 
 ## Events
