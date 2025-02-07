@@ -5,6 +5,7 @@
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
  */
+
 package ti.tts;
 
 import android.annotation.SuppressLint;
@@ -96,6 +97,7 @@ public class TiTtsModule extends KrollModule {
             fireEvent("init", kd);
         });
     }
+    
     @SuppressLint("NewApi")
     @Kroll.method
     public void initSilent() {
