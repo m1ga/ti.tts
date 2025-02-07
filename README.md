@@ -5,11 +5,11 @@ Simple tts (text-to-speech) module for Titanium SDK. Allows you to say a sentenc
 ## Methods
 
 -   <b>init()</b>
--   <b>speak({text:string})</b> - There is a character limit of 4000 characters per speak method
+-   <b>speak({text:string})</b> - There is a character limit (of 4000 characters) per speak method that can be read from bufferlen properties.
 -   <b>synthesizeToFile({text:string,filename:string})</b>
 -   <b>stop()</b>
 -   <b>shutdown()</b>
--   <b>getVoices(filter:string)</b> - Returns a string with voices separated by a `|`. Optionally you can pass in a string to filter on voices names, for example `de-de` to only get German voices. Voices are in the fromat <lang>-<region>-x-<flags>-<type>, where lang and region are 2 char codes, flags is a usually 3 cahr voice description, and type can be local (on device voice), network (on cloud voice) or language (not specified).
+-   <b>getVoices(filter:string)</b> - Returns a string with voices separated by a `|`. Optionally you can pass in a string to filter on voices names, for example `de-de` to only get German voices.
 
 ## Properties
 
@@ -19,6 +19,7 @@ Simple tts (text-to-speech) module for Titanium SDK. Allows you to say a sentenc
 -   <b>voice</b> (setter): string
 -   <b>language</b> (setter): string. e.g. `de` or `en`
 -   <b>speaking</b> (getter): boolean. (DO NOT RELY ON THIS!)
+-   <b>bufferlen</b> (getter): int. Maximum length of the text string to read (Usually 4000 character)
 
 ## Events
 
@@ -26,6 +27,15 @@ Simple tts (text-to-speech) module for Titanium SDK. Allows you to say a sentenc
 -   <b>stop</b>: when TTS stops
 -   <b>error</b>: when TTS fails
 -   <b>done</b>: when TTS has done (includes `blob` with the sound file if available)
+
+## Voices' names
+
+ Voices are in the fromat:
+    <lang>-<region>-x-<flags>-<type>
+ Where:
+  - <lang> and <region> are 2 char ISO codes (i.e. it, de, en)
+  - <flags> is a usually 3 char voice description
+  - <type> can be "local" (on device voice), "network" (on cloud voice) or "language" (not specified)
 
 ## Example
 
