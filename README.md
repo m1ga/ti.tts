@@ -31,11 +31,13 @@ Simple tts (text-to-speech) module for Titanium SDK. Allows you to say a sentenc
 ## Voices' names
 
  Voices are in the fromat:
-    <lang>-<region>-x-<flags>-<type>
+ 
+    &lt;lang&gt;-&lt;region&gt;-x-&lt;flags&gt;-&lt;type&gt;
+    
  Where:
-  - <lang> and <region> are 2 char ISO codes (i.e. it, de, en)
-  - <flags> is a usually 3 char voice description
-  - <type> can be "local" (on device voice), "network" (on cloud voice) or "language" (not specified)
+  - &lt;lang&gt; and &lt;region&gt; are 2 char ISO codes (i.e. it, de, en)
+  - &lt;flags&gt; is a usually 3 char voice description
+  - &lt;type&gt; can be "local" (on device voice), "network" (on cloud voice) or "language" (not specified)
 
 ## Example
 
