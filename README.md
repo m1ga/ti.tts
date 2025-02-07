@@ -37,9 +37,9 @@ Simple tts (text-to-speech) module for Titanium SDK. Allows you to say a sentenc
     <lang>-<region>-x-<flags>-<type>
     
  Where:
-  - &lt;lang&gt; and &lt;region&gt; are 2 char ISO codes (i.e. it, de, en)
+  - &lt;lang&gt; and &lt;region&gt; are 2 char ISO codes (i.e. `it`, `de`, `en`)
   - &lt;flags&gt; is a usually 3 char voice description
-  - &lt;type&gt; can be "local" (on device voice), "network" (on cloud voice) or "language" (not specified)
+  - &lt;type&gt; can be `local` (on device voice), `network` (on cloud voice) or `language` (not specified)
 
 ## Example
 
