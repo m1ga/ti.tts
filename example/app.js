@@ -12,7 +12,6 @@ win.addEventListener("close", function() {
 });
 tts.addEventListener("init", function(e) {
 	console.log('Init Status: ',e.status);
-	tts.emitEvents();
 	const voices=tts.getVoices('en').split("|");
  	console.log(voices.join(', '));
 	if (voices.length>0)
