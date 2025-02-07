@@ -92,6 +92,16 @@ public class TiTtsModule extends KrollModule {
         tts = new TextToSpeech(TiApplication.getAppCurrentActivity(), status -> {
             KrollDict kd = new KrollDict();
             kd.put("status", status);
+            emitEvents();
+            fireEvent("init", kd);
+        });
+    }
+    @SuppressLint("NewApi")
+    @Kroll.method
+    public void initSilent() {
+        tts = new TextToSpeech(TiApplication.getAppCurrentActivity(), status -> {
+            KrollDict kd = new KrollDict();
+            kd.put("status", status);
             fireEvent("init", kd);
         });
     }
@@ -150,8 +160,10 @@ public class TiTtsModule extends KrollModule {
         try {
             TiBaseFile outfile = TiFileFactory.createTitaniumFile(fileName, true);
             tts.synthesizeToFile(value, bundle, outfile.getNativeFile(), uid);
-            lastBlobId = uid;
-            lastBlobFile = outfile;
+            if (params.optBoolean("blob",true)) {
+             lastBlobId = uid;
+             lastBlobFile = outfile;
+            }
             return outfile.nativePath();
         } catch (Exception e) {
             return null;
