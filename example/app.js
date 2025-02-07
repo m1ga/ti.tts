@@ -11,11 +11,14 @@ win.addEventListener("close", function() {
 	tts.shutdown();
 });
 tts.addEventListener("init", function(e) {
-        tts.emitEvents();
+	console.log('Init Status: ',e.status);
+	tts.emitEvents();
 	tts.speak({text:"Hello! This is a test message for you."});
-//	tts.synthesizeToFile("Hello");
- console.log(e);
- console.log(tts.getVoices().split("|"));
+	const voices=tts.getVoices('en').split("|");
+ 	console.log(voices.join(', '));
+	if (voices.length>0)
+	 tts.voice=voices[0];
+	console.log('Synt to: ', tts.synthesizeToFile({text:"Hello",filename:'tts-test.wav'}));
 });
 tts.addEventListener("start", function(e) {
 	console.log(e.type,e.id);
