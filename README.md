@@ -24,7 +24,7 @@ Simple tts (text-to-speech) module for Titanium SDK. Allows you to say a sentenc
 -   <b>init()</b>: when TTS is ready
 -   <b>stop()</b>: when TTS stops
 -   <b>error()</b>: when TTS fails
--   <b>done()</b>: when TTS has done
+-   <b>done()</b>: when TTS has done (returns `blob` with the sound file if available)
 
 ## Example
 
