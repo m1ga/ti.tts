@@ -30,7 +30,7 @@ public class TiTtsModule extends KrollModule {
     private static final String LCAT = "TiTtsModule";
     private static final String defaultID = "utteranceID";
     private String lastBlobId = null;
-    private TiBlob lastBlob;
+    private TiBaseFile lastBlobFile;
     
     TextToSpeech tts;
 
@@ -151,7 +151,7 @@ public class TiTtsModule extends KrollModule {
             TiBaseFile outfile = TiFileFactory.createTitaniumFile(fileName, true);
             tts.synthesizeToFile(value, bundle, outfile.getNativeFile(), uid);
             lastBlobId = uid;
-            lastBlob = TiBlob.blobFromFile(outfile);
+            lastBlobFile = outfile;
             return outfile.nativePath();
         } catch (Exception e) {
             return null;
@@ -174,8 +174,8 @@ public class TiTtsModule extends KrollModule {
                     KrollDict kd = new KrollDict();
                     kd.put("id", utteranceId);
                     if (utteranceId.equals(lastBlobId))
-                     kd.put("blob", lastBlob);
-                    lastBlob=null;
+                     kd.put("blob", TiBlob.blobFromFile(lastBlobFile));
+                    lastBlobFile=null;
                     lastBlobId=null;
                     fireEvent("done", kd);
                 }
