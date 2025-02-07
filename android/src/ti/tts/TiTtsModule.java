@@ -27,12 +27,13 @@ import java.util.Locale;
 @Kroll.module(name = "TiTts", id = "ti.tts")
 public class TiTtsModule extends KrollModule {
 
+    private static final String LCAT = "TiTtsModule";
+    private static final String defaultID = "utteranceID";
     TextToSpeech tts;
 
     public TiTtsModule() {
         super();
     }
-
 
     @Kroll.onAppCreate
     public static void onAppCreate(TiApplication app) {
@@ -42,14 +43,16 @@ public class TiTtsModule extends KrollModule {
     @Kroll.method
     public String getVoices(@Kroll.argument(optional = true) String value) {
         String out = "";
+        String cnc = "";
         for (Voice tmpVoice : tts.getVoices()) {
             if (value != null) {
                 if (tmpVoice.getName().contains(value)) {
-                    out += tmpVoice.getName() + "|";
+                    out += cnc + tmpVoice.getName();
                 }
             } else {
-                out += tmpVoice.getName() + "|";
+                out += cnc + tmpVoice.getName();
             }
+            cnc="|";
         }
         return out;
     }
@@ -80,58 +83,133 @@ public class TiTtsModule extends KrollModule {
         }
     }
 
+    @SuppressLint("NewApi")
     @Kroll.method
     public void init() {
         tts = new TextToSpeech(TiApplication.getAppCurrentActivity(), status -> {
-            fireEvent("init", new KrollDict());
+            KrollDict kd = new KrollDict();
+            kd.put("status", status);
+            fireEvent("init", kd);
         });
     }
 
+    @SuppressLint("NewApi")
     @Kroll.method
-    public void speak(String value) {
-        tts.speak(value, TextToSpeech.QUEUE_ADD, null);
+       
+    public void speak(KrollDict params) {
+        String value = params.getString("text");
+        String uid = params.optString("uid", TiTtsModule.defaultID);
+        int mode = params.optBoolean("flush",false) ? TextToSpeech.QUEUE_FLUSH : TextToSpeech.QUEUE_ADD;
+        Bundle bundle = null;
+        if (params.containsKey("volume")||params.containsKey("pan") ) {
+         bundle=new Bundle();
+         if (params.containsKey("volume"))
+          bundle.putFloat(TextToSpeech.Engine.KEY_PARAM_VOLUME, params.getDouble("volume").floatValue()); // [ from 0.0 to 1.0 ]
+         if (params.containsKey("pan"))
+          bundle.putFloat(TextToSpeech.Engine.KEY_PARAM_PAN, params.getDouble("pan").floatValue()); // [ from -1.0 to 1.0 ]
+        }
+        tts.speak(value, mode, bundle, uid);
     }
-
 
     @SuppressLint("NewApi")
     @Kroll.setProperty
     public void setLanguage(String value) {
         tts.setLanguage(Locale.forLanguageTag(value));
     }
+    
+    @SuppressLint("NewApi")
+    @Kroll.getProperty
+    public int getBufferlen() {
+        return TextToSpeech.getMaxSpeechInputLength();
+    }
+    
+    @SuppressLint("NewApi")
+    @Kroll.getProperty
+    public boolean getSpeaking() {
+        return tts.isSpeaking();
+    }
 
     @SuppressLint("NewApi")
     @Kroll.method
-    public void synthesizeToFile(String value) {
+    public String synthesizeToFile(KrollDict params) {
+        String value = params.getString("text");
+        String uid = params.optString("uid", TiTtsModule.defaultID);
+        String fileName = params.optString("filename", System.currentTimeMillis() + ".wav");
+        Bundle bundle = new Bundle();
+//        bundleTts.putString(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, fileName);
+        bundle.putString(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, uid);
+        if (params.containsKey("volume")||params.containsKey("pan") ) {
+         bundle=new Bundle();
+         if (params.containsKey("volume"))
+          bundle.putFloat(TextToSpeech.Engine.KEY_PARAM_VOLUME, params.getDouble("volume").floatValue()); // [ from 0.0 to 1.0 ]
+         if (params.containsKey("pan"))
+          bundle.putFloat(TextToSpeech.Engine.KEY_PARAM_PAN, params.getDouble("pan").floatValue()); // [ from -1.0 to 1.0 ]
+        }
 
-        Bundle bundleTts = new Bundle();
-        String fileName = System.currentTimeMillis() + ".wav";
-        bundleTts.putString(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, fileName);
 
         try {
             TiBaseFile outfile = TiFileFactory.createTitaniumFile(fileName, true);
+            tts.synthesizeToFile(value, bundle, outfile.getNativeFile(), uid);
+            return outfile.nativePath(); // absolutePath? 
+        } catch (Exception e) {
+            return null;
+        }
+    }
 
-            tts.setOnUtteranceProgressListener(new UtteranceProgressListener() {
+    @SuppressLint("NewApi")
+    @Kroll.method
+    public int emitEvents() {
+        return tts.setOnUtteranceProgressListener(new UtteranceProgressListener() {
                 @Override
                 public void onStart(String utteranceId) {
-
+                    KrollDict kd = new KrollDict();
+                    kd.put("id", utteranceId);
+                    fireEvent("start", kd);
                 }
 
                 @Override
                 public void onDone(String utteranceId) {
                     KrollDict kd = new KrollDict();
-                    kd.put("blob", TiBlob.blobFromFile(outfile));
+                    kd.put("id", utteranceId);
                     fireEvent("done", kd);
                 }
 
                 @Override
-                public void onError(String utteranceId) {
+                public void onError(String utteranceId, int code) {
+                    KrollDict kd = new KrollDict();
+                    kd.put("id", utteranceId);
+                    kd.put("code", code);
+                    fireEvent("error", kd);
+                }
 
+                @Override
+                @Deprecated
+                public void onError(String utteranceId) {
+                    KrollDict kd = new KrollDict();
+                    kd.put("id", utteranceId);
+                    fireEvent("error", kd);
+                }
+
+                @Override
+                public void onStop(String utteranceId, boolean interrupted) {
+                    KrollDict kd = new KrollDict();
+                    kd.put("id", utteranceId);
+                    kd.put("interrupted", interrupted);
+                    fireEvent("stop", kd);
                 }
             });
-            tts.synthesizeToFile(value, bundleTts, outfile.getNativeFile(), "1");
-        } catch (Exception e) {
+    }
+    
+    @SuppressLint("NewApi")
+    @Kroll.method
+    public void shutdown() {
+        tts.shutdown();
+    }
 
-        }
+    @SuppressLint("NewApi")
+    @Kroll.method
+    public int stop() {
+        return tts.stop();
     }
 
 }
