@@ -31,7 +31,6 @@ Simple tts (text-to-speech) module for Titanium SDK. Allows you to say a sentenc
 ## Voices' names
 
  Voices are in the fromat:
- 
     &lt;lang&gt;-&lt;region&gt;-x-&lt;flags&gt;-&lt;type&gt;
     
  Where:
