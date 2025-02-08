@@ -5,7 +5,6 @@
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
  */
-
 package ti.tts;
 
 import android.annotation.SuppressLint;
@@ -32,15 +31,23 @@ public class TiTtsModule extends KrollModule {
     private static final String defaultID = "utteranceID";
     private String lastBlobId = null;
     private TiBaseFile lastBlobFile;
+    private KrollDict config=null;
     
     TextToSpeech tts;
 
     public TiTtsModule() {
         super();
     }
-
+    
     @Kroll.onAppCreate
     public static void onAppCreate(TiApplication app) {
+    }
+
+    @SuppressLint("NewApi")
+    @Deprecated
+    @Kroll.method
+    public TiTtsModule separateSpeaker() {
+     return new TiTtsModule();
     }
 
     @SuppressLint("NewApi")
@@ -52,11 +59,12 @@ public class TiTtsModule extends KrollModule {
             if (value != null) {
                 if (tmpVoice.getName().contains(value)) {
                     out += cnc + tmpVoice.getName();
+                    cnc="|";
                 }
             } else {
                 out += cnc + tmpVoice.getName();
+                cnc="|";
             }
-            cnc="|";
         }
         return out;
     }
@@ -97,7 +105,6 @@ public class TiTtsModule extends KrollModule {
             fireEvent("init", kd);
         });
     }
-    
     @SuppressLint("NewApi")
     @Kroll.method
     public void initSilent() {
@@ -113,17 +120,56 @@ public class TiTtsModule extends KrollModule {
        
     public void speak(KrollDict params) {
         String value = params.getString("text");
-        String uid = params.optString("uid", TiTtsModule.defaultID);
-        int mode = params.optBoolean("flush",false) ? TextToSpeech.QUEUE_FLUSH : TextToSpeech.QUEUE_ADD;
+        String uid = getStringKey(params, "uid", TiTtsModule.defaultID);
+        int mode = getBooleanKey(params,"flush",false) ? TextToSpeech.QUEUE_FLUSH : TextToSpeech.QUEUE_ADD;
         Bundle bundle = null;
-        if (params.containsKey("volume")||params.containsKey("pan") ) {
+        Double vol = getDoubleKey(params, "volume", null);
+        Double pan = getDoubleKey(params, "pan", null);
+        if ((vol != null) && (pan != null)) {
          bundle=new Bundle();
-         if (params.containsKey("volume"))
-          bundle.putFloat(TextToSpeech.Engine.KEY_PARAM_VOLUME, params.getDouble("volume").floatValue()); // [ from 0.0 to 1.0 ]
-         if (params.containsKey("pan"))
-          bundle.putFloat(TextToSpeech.Engine.KEY_PARAM_PAN, params.getDouble("pan").floatValue()); // [ from -1.0 to 1.0 ]
+         if (vol != null)
+          bundle.putFloat(TextToSpeech.Engine.KEY_PARAM_VOLUME, vol.floatValue()); // [ from 0.0 to 1.0 ]
+         if (pan != null)
+          bundle.putFloat(TextToSpeech.Engine.KEY_PARAM_PAN, pan.floatValue()); // [ from -1.0 to 1.0 ]
         }
         tts.speak(value, mode, bundle, uid);
+    }
+    
+    private Double getDoubleKey(KrollDict params, String key) {
+        return getDoubleKey(params, key, null);
+    }
+    private Double getDoubleKey(KrollDict params, String key, Double def) {
+        if ((params != null)&&(params.containsKeyAndNotNull(key)))
+            return params.getDouble(key);
+        if ((config != null)&&(config.containsKeyAndNotNull(key)))
+            return config.getDouble(key);
+        return def;
+    }
+    private String getStringKey(KrollDict params, String key, String def) {
+        if ((params != null)&&(params.containsKeyAndNotNull(key)))
+            return params.getString(key);
+        if ((config != null)&&(config.containsKeyAndNotNull(key)))
+            return config.getString(key);
+        return def;
+    }
+    private boolean getBooleanKey(KrollDict params, String key, boolean def) {
+        if ((params != null)&&(params.containsKeyAndNotNull(key)))
+            return params.getBoolean(key);
+        if ((config != null)&&(config.containsKeyAndNotNull(key)))
+            return config.getBoolean(key);
+        return def;
+    }
+
+    public void setup(KrollDict params) {
+        config=params;
+        if (params.containsKeyAndNotNull("pitch"))
+            setPitch(params.getDouble("pitch").floatValue());
+        if (params.containsKeyAndNotNull("speed"))
+            setSpeed(params.getDouble("speed").floatValue());
+        if (params.containsKeyAndNotNull("voice"))
+            setVoice(params.getString("voice"));
+        if (params.containsKeyAndNotNull("language"))
+            setLanguage(params.getString("language"));
     }
 
     @SuppressLint("NewApi")
@@ -148,21 +194,24 @@ public class TiTtsModule extends KrollModule {
     @Kroll.method
     public String synthesizeToFile(KrollDict params) {
         String value = params.getString("text");
-        String uid = params.optString("uid", TiTtsModule.defaultID);
-        String fileName = params.optString("filename", System.currentTimeMillis() + ".wav");
-        Bundle bundle = new Bundle();
+
+        String uid = getStringKey(params, "uid", TiTtsModule.defaultID);
+        String fileName = getStringKey(params, "filename", System.currentTimeMillis() + ".wav");        
+        Bundle bundle = null;
         bundle.putString(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, uid);
-        if ( params.containsKey("volume") || params.containsKey("pan") ) {
+        Double vol = getDoubleKey(params, "volume", null);
+        Double pan = getDoubleKey(params, "pan", null);
+        if ((vol != null) && (pan != null)) {
          bundle=new Bundle();
-         if (params.containsKey("volume"))
-          bundle.putFloat(TextToSpeech.Engine.KEY_PARAM_VOLUME, params.getDouble("volume").floatValue()); // [ from 0.0 to 1.0 ]
-         if (params.containsKey("pan"))
-          bundle.putFloat(TextToSpeech.Engine.KEY_PARAM_PAN, params.getDouble("pan").floatValue()); // [ from -1.0 to 1.0 ]
+         if (vol != null)
+          bundle.putFloat(TextToSpeech.Engine.KEY_PARAM_VOLUME, vol.floatValue()); // [ from 0.0 to 1.0 ]
+         if (pan != null)
+          bundle.putFloat(TextToSpeech.Engine.KEY_PARAM_PAN, pan.floatValue()); // [ from -1.0 to 1.0 ]
         }
         try {
             TiBaseFile outfile = TiFileFactory.createTitaniumFile(fileName, true);
             tts.synthesizeToFile(value, bundle, outfile.getNativeFile(), uid);
-            if (params.optBoolean("blob",true)) {
+            if (getBooleanKey(params,"blob",true)) {
              lastBlobId = uid;
              lastBlobFile = outfile;
             }
@@ -179,14 +228,14 @@ public class TiTtsModule extends KrollModule {
                 @Override
                 public void onStart(String utteranceId) {
                     KrollDict kd = new KrollDict();
-                    kd.put("id", utteranceId);
+                    kd.put("uid", utteranceId);
                     fireEvent("start", kd);
                 }
 
                 @Override
                 public void onDone(String utteranceId) {
                     KrollDict kd = new KrollDict();
-                    kd.put("id", utteranceId);
+                    kd.put("uid", utteranceId);
                     if (utteranceId.equals(lastBlobId))
                      kd.put("blob", TiBlob.blobFromFile(lastBlobFile));
                     lastBlobFile=null;
@@ -197,7 +246,7 @@ public class TiTtsModule extends KrollModule {
                 @Override
                 public void onError(String utteranceId, int code) {
                     KrollDict kd = new KrollDict();
-                    kd.put("id", utteranceId);
+                    kd.put("uid", utteranceId);
                     kd.put("code", code);
                     fireEvent("error", kd);
                 }
@@ -206,14 +255,14 @@ public class TiTtsModule extends KrollModule {
                 @Deprecated
                 public void onError(String utteranceId) {
                     KrollDict kd = new KrollDict();
-                    kd.put("id", utteranceId);
+                    kd.put("uid", utteranceId);
                     fireEvent("error", kd);
                 }
 
                 @Override
                 public void onStop(String utteranceId, boolean interrupted) {
                     KrollDict kd = new KrollDict();
-                    kd.put("id", utteranceId);
+                    kd.put("uid", utteranceId);
                     kd.put("interrupted", interrupted);
                     fireEvent("stop", kd);
                 }
