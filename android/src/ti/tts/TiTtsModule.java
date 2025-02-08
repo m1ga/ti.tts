@@ -257,7 +257,7 @@ public class TiTtsModule extends KrollModule {
         String out = "";
         String cnc = "";
         for (TextToSpeech.EngineInfo tmpEngine : tts.getEngines()) {
-            out += cnc + tmpEngine.label + " - " + tmpEngine.name;
+            out += cnc + tmpEngine.label + " @" + tmpEngine.name;
             cnc = "|";
         }
         return out;
@@ -268,7 +268,17 @@ public class TiTtsModule extends KrollModule {
     public Object[] getEngineList() {
         List<String> enginesList = new ArrayList<>();
         for (TextToSpeech.EngineInfo tmpEngine : tts.getEngines()) {
-            enginesList.add(tmpEngine.label + " - " + tmpEngine.name);
+            enginesList.add(tmpEngine.label + " @" + tmpEngine.name);
+        }
+        return enginesList.toArray(new String[0]);
+    }
+
+    @SuppressLint("NewApi")
+    @Kroll.method
+    public Object[] getEnginePackageList() {
+        List<String> enginesList = new ArrayList<>();
+        for (TextToSpeech.EngineInfo tmpEngine : tts.getEngines()) {
+            enginesList.add(tmpEngine.name);
         }
         return enginesList.toArray(new String[0]);
     }
