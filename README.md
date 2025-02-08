@@ -19,10 +19,10 @@ Simple tts (text-to-speech) module for Titanium SDK. Allows you to say a sentenc
 -   <b>getLanguages()</b>
 -   <b>getEngineList()</b>
 -   <b>getLanguageList()</b>
--   <b>getEngines</b>
+-   <b>getEngines()</b>
 -   <b>getVoiceList( filter: string )</b>
 -   <b>getVoiceFeatures( voice: string )</b>
--   <b>setEngine( engine: string )</b> - Deprecated
+-   <b>setEngine( engine: string )</b> - Deprecated, because do not emit init Event when Engine is ready. Use init(engine) instead.
 
 
 ## Properties
