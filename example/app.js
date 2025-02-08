@@ -20,16 +20,16 @@ tts.addEventListener("init", function(e) {
 	console.log('Synt to: ', tts.synthesizeToFile({text:"Hello", filename:'tts-test.wav'}));
 });
 tts.addEventListener("start", function(e) {
-	console.log(e.type,e.id);
+	console.log(e.type,e.uid);
 });
 tts.addEventListener("stop", function(e) {
-	console.log(e.type,e.id,interrupted);
+	console.log(e.type,e.uid,interrupted);
 });
 tts.addEventListener("error", function(e) {
-	console.log(e.type,e.id,code);
+	console.log(e.type,e.uid,code);
 });
 tts.addEventListener("done", function(e) {
-	console.log(e.type,e.id);
+	console.log(e.type,e.uid);
 	if (e.blob)
 		console.log(e.blob);
 });
