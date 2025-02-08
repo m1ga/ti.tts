@@ -77,6 +77,11 @@ Simple tts (text-to-speech) module for Titanium SDK. Allows you to say a sentenc
  - uid: Utterance ID.
  - filename: File name for synthetizeToFile.
 
+## Notes
+
+ - There is a limit of bufferlen (4000) characters for each call to speak and synthetizeToFile.
+ - Sometime after on init event a queque FLUSH could be needed to start speaking.
+ 
 ## Example
 
 ```js
