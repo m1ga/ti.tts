@@ -21,8 +21,8 @@ Simple tts (text-to-speech) module for Titanium SDK. Allows you to say a sentenc
 -   <b>getVoiceFeatures( voice: string )</b>
 -   <b>separateSpeaker()</b> - Return a new Instance of TTS ( Experimental feature, marked as Deprecated to notify it).
 -   <b>setEngine( engine: string )</b> - Deprecated, because do not emit init Event when Engine is ready. Use init(engine) instead.
--   <b>initSilent()</b> - Init without events emitter
--   <b>emitEvents()</b> - Start events emitter
+-   <b>initSilent()</b> - Init without events emitter (except for the init event once).
+-   <b>emitEvents()</b> - Start events emitter.
 
 
 ## Properties
