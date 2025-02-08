@@ -87,14 +87,17 @@ Simple tts (text-to-speech) module for Titanium SDK. Allows you to say a sentenc
 const tts = require("ti.tts");
 const win = Ti.UI.createWindow();
 
-win.open();
-
-win.addEventListener("open", function() {
-	tts.init();
-});
 tts.addEventListener("init", function(e) {
 	tts.speak({text:"Hello", flush:true});
 });
+win.addEventListener("open", function() {
+	tts.init();
+});
+win.addEventListener("close", function() {
+	tts.shutdown();
+});
+
+win.open();
 ```
 
 
