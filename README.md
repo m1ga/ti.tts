@@ -88,8 +88,9 @@ const tts = require("ti.tts");
 const win = Ti.UI.createWindow();
 
 tts.addEventListener("init", function(e) {
-	tts.speak({text:"Hello", flush:true});
+	tts.speak({text:"Hello World!", flush:true});
 });
+
 win.addEventListener("open", function() {
 	tts.init();
 });
