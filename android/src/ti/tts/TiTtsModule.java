@@ -7,6 +7,9 @@
  */
 package ti.tts;
 
+import java.util.List;
+import java.util.ArrayList;
+
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
@@ -69,6 +72,22 @@ public class TiTtsModule extends KrollModule {
         return out;
     }
 
+    @SuppressLint("NewApi")
+    @Kroll.method
+    public Object[] getVoiceList(@Kroll.argument(optional = true) String value) {
+        List<String> voicesList = new ArrayList<>();
+        for (Voice tmpVoice : tts.getVoices()) {
+            if (value != null) {
+                if (tmpVoice.getName().contains(value)) {
+                    voicesList.add(tmpVoice.getName());
+                }
+            } else {
+                voicesList.add(tmpVoice.getName());
+            }
+        }
+        return voicesList.toArray(new String[0]);
+    }
+
     @Kroll.setProperty
     public void setSpeed(float value) {
         tts.setSpeechRate(value);
@@ -97,14 +116,47 @@ public class TiTtsModule extends KrollModule {
 
     @SuppressLint("NewApi")
     @Kroll.method
-    public void init() {
-        tts = new TextToSpeech(TiApplication.getAppCurrentActivity(), status -> {
+    public KrollDict getVoiceFeatures(String value) {
+        Voice voice = null;
+        for (Voice tmpVoice : tts.getVoices()) {
+            if (tmpVoice.getName().equals(value)) {
+                voice = tmpVoice;
+                break;
+            }
+        }
+        if (voice != null) {
             KrollDict kd = new KrollDict();
-            kd.put("status", status);
-            emitEvents();
-            fireEvent("init", kd);
-        });
+            kd.put("name", voice.getName());
+            kd.put("locale", voice.getLocale().toLanguageTag());
+            kd.put("quality", voice.getQuality());
+            kd.put("latency", voice.getLatency());
+            kd.put("features", voice.getFeatures().toArray(new String[0]));
+            kd.put("network", voice.isNetworkConnectionRequired());
+            return kd;
+        } else
+            return null;
     }
+
+    @SuppressLint("NewApi")
+    @Kroll.method
+    public void init(@Kroll.argument(optional = true) String engine) {
+        if (engine == null) {
+            tts = new TextToSpeech(TiApplication.getAppCurrentActivity(), status -> {
+                KrollDict kd = new KrollDict();
+                kd.put("status", status);
+                emitEvents();
+                fireEvent("init", kd);
+            });
+        } else {
+            tts = new TextToSpeech(TiApplication.getAppCurrentActivity(), status -> {
+                KrollDict kd = new KrollDict();
+                kd.put("status", status);
+                emitEvents();
+                fireEvent("init", kd);
+            }, engine);
+        }
+    }
+    
     @SuppressLint("NewApi")
     @Kroll.method
     public void initSilent() {
@@ -117,7 +169,6 @@ public class TiTtsModule extends KrollModule {
 
     @SuppressLint("NewApi")
     @Kroll.method
-       
     public void speak(KrollDict params) {
         String value = params.getString("text");
         String uid = getStringKey(params, "uid", TiTtsModule.defaultID);
@@ -176,6 +227,58 @@ public class TiTtsModule extends KrollModule {
     @Kroll.setProperty
     public void setLanguage(String value) {
         tts.setLanguage(Locale.forLanguageTag(value));
+    }
+
+    @SuppressLint("NewApi")
+    @Kroll.method
+    public String getLanguages() {
+        String out = "";
+        String cnc = "";
+        for (Locale tmpLang : tts.getAvailableLanguages()) {
+            out += cnc + tmpLang.toLanguageTag();
+            cnc="|";
+        }
+        return out;
+    }
+    
+    @SuppressLint("NewApi")
+    @Kroll.method
+    public Object[] getLanguageList() {
+        List<String> languagesList = new ArrayList<>();
+        for (Locale tmpLang : tts.getAvailableLanguages()) {
+            languagesList.add(tmpLang.toLanguageTag());
+        }
+        return languagesList.toArray(new String[0]);
+    }
+
+    @SuppressLint("NewApi")
+    @Kroll.method
+    public String getEngines() {
+        String out = "";
+        String cnc = "";
+        for (TextToSpeech.EngineInfo tmpEngine : tts.getEngines()) {
+            out += cnc + tmpEngine.label + " - " + tmpEngine.name;
+            cnc = "|";
+        }
+        return out;
+    }
+
+    @SuppressLint("NewApi")
+    @Kroll.method
+    public Object[] getEngineList() {
+        List<String> enginesList = new ArrayList<>();
+        for (TextToSpeech.EngineInfo tmpEngine : tts.getEngines()) {
+            enginesList.add(tmpEngine.label + " - " + tmpEngine.name);
+        }
+        return enginesList.toArray(new String[0]);
+    }
+
+
+    @SuppressLint("NewApi")
+    @Deprecated
+    @Kroll.method
+    public void setEngine(String engine) {
+        tts.setEngineByPackageName(engine);
     }
     
     @SuppressLint("NewApi")
