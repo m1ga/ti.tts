@@ -94,7 +94,7 @@ win.addEventListener("open", function() {
 	tts.init();
 });
 tts.addEventListener("init", function(e) {
-	tts.speak("Hello");
+	tts.speak({text:"Hello", flush:true});
 });
 ```
 
