@@ -80,7 +80,7 @@ Simple tts (text-to-speech) module for Titanium SDK. Allows you to say a sentenc
 ## Notes
 
  - There is a limit of bufferlen (4000) characters for each call to speak and synthetizeToFile.
- - Sometime after on init event a queque FLUSH could be needed to start speaking.
+ - Sometime after on init event a queque FLUSH could be needed to start speaking (especially if speaking is true).
  
 ## Example
 
