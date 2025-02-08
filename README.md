@@ -14,7 +14,7 @@ Simple tts (text-to-speech) module for Titanium SDK. Allows you to say a sentenc
 -   <b>getVoices( filter: string )</b> - Returns a string with voices separated by a `|`. Optionally you can pass in a string to filter on voices names, for example `de-de` to only get German voices.
 -   <b>initSilent()</b> - Init without events emitter
 -   <b>emitEvents()</b> - Start events emitter
--   <b>separateSpeaker()</b> - Return new Instance of TTS ( Experimental feature, marked as Deprecated ).
+-   <b>separateSpeaker()</b> - Return a new Instance of TTS ( Experimental feature, marked as Deprecated to notify it).
 -   <b>getEngines()</b>
 -   <b>getLanguages()</b>
 -   <b>getEngineList()</b>
