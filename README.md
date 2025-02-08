@@ -9,10 +9,11 @@ Simple tts (text-to-speech) module for Titanium SDK. Allows you to say a sentenc
 -   <b>synthesizeToFile({ text: string, filename: string, uid: string, volume: float, pan: float, blob: boolean })</b>
 -   <b>stop()</b>
 -   <b>shutdown()</b>
--   <b>setup({ voice: string, language: string, volume: float, pan: float, speed: float, pitch: float, flush: boolean, uid: boolean, filename: string, blob: boolean})</b>
+-   <b>setup({ voice: string, language: string, volume: float, pan: float, speed: float, pitch: float, flush: boolean, uid: boolean, filename: string, blob: boolean})</b> - Default configuration for Speaker
 -   <b>getVoices( filter: string )</b> - Returns a string with voices separated by a `|`. Optionally you can pass in a string to filter on voices names, for example `de-de` to only get German voices.
 -   <b>initSilent()</b> - Init without events emitter
 -   <b>emitEvents()</b> - Start events emitter
+-   <b>separateSpeaker()</b> - Return new Instance of TTS ( Experimental feature, marked as Deprecated ).
 
 ## Properties
 
