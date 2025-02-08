@@ -37,7 +37,7 @@ Simple tts (text-to-speech) module for Titanium SDK. Allows you to say a sentenc
 
 ## Events
 
--   <b>init</b>: when TTS is ready - CallBack({ status: string })
+-   <b>init</b>: when TTS is ready - CallBack({ status: int })
 -   <b>stop</b>: when TTS stops - CallBack({ uid: string, interrupted: boolean })
 -   <b>error</b>: when TTS fails - CallBack({ uid: string, code: int })
 -   <b>done</b>: when TTS has done (Can include a Blob for SynthToFile)- CallBack({ uid: string, blob: Blob })
