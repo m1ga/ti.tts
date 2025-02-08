@@ -12,17 +12,17 @@ Simple tts (text-to-speech) module for Titanium SDK. Allows you to say a sentenc
 -   <b>shutdown()</b>
 -   <b>setup({ voice: string, language: string, volume: float, pan: float, speed: float, pitch: float, flush: boolean, uid: boolean, filename: string, blob: boolean})</b> - Default configuration for Speaker
 -   <b>getVoices( filter: string )</b> - Returns a string with voices separated by a `|`. Optionally you can pass in a string to filter on voices names, for example `de-de` to only get German voices.
--   <b>initSilent()</b> - Init without events emitter
--   <b>emitEvents()</b> - Start events emitter
--   <b>separateSpeaker()</b> - Return a new Instance of TTS ( Experimental feature, marked as Deprecated to notify it).
+-   <b>getVoiceList( filter: string )</b>
 -   <b>getEngines()</b>
--   <b>getLanguages()</b>
 -   <b>getEngineList()</b>
 -   <b>getEnginePackageList()</b> - The Engines' Package Name for init(engine) and setEngine(engine).
+-   <b>getLanguages()</b>
 -   <b>getLanguageList()</b>
--   <b>getVoiceList( filter: string )</b>
 -   <b>getVoiceFeatures( voice: string )</b>
+-   <b>separateSpeaker()</b> - Return a new Instance of TTS ( Experimental feature, marked as Deprecated to notify it).
 -   <b>setEngine( engine: string )</b> - Deprecated, because do not emit init Event when Engine is ready. Use init(engine) instead.
+-   <b>initSilent()</b> - Init without events emitter
+-   <b>emitEvents()</b> - Start events emitter
 
 
 ## Properties
