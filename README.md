@@ -9,6 +9,7 @@ Simple tts (text-to-speech) module for Titanium SDK. Allows you to say a sentenc
 -   <b>synthesizeToFile({ text: string, filename: string, uid: string, volume: float, pan: float, blob: boolean })</b>
 -   <b>stop()</b>
 -   <b>shutdown()</b>
+-   <b>setup({ voice: string, language: string, volume: float, pan: float, speed: float, pitch: float, flush: boolean, uid: boolean, filename: string, blob: boolean})</b>
 -   <b>getVoices( filter: string )</b> - Returns a string with voices separated by a `|`. Optionally you can pass in a string to filter on voices names, for example `de-de` to only get German voices.
 -   <b>initSilent()</b> - Init without events emitter
 -   <b>emitEvents()</b> - Start events emitter
@@ -26,9 +27,9 @@ Simple tts (text-to-speech) module for Titanium SDK. Allows you to say a sentenc
 ## Events
 
 -   <b>init</b>: when TTS is ready - CallBack({ status: string })
--   <b>stop</b>: when TTS stops - CallBack({ id: string, interrupted: boolean })
--   <b>error</b>: when TTS fails - CallBack({ id: string, code: int })
--   <b>done</b>: when TTS has done (Can include a Blob for SynthToFile)- CallBack({ id: string, blob: Blob })
+-   <b>stop</b>: when TTS stops - CallBack({ uid: string, interrupted: boolean })
+-   <b>error</b>: when TTS fails - CallBack({ uid: string, code: int })
+-   <b>done</b>: when TTS has done (Can include a Blob for SynthToFile)- CallBack({ uid: string, blob: Blob })
 
 ## Voices' names
 
