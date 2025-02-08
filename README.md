@@ -39,7 +39,7 @@ Simple tts (text-to-speech) module for Titanium SDK. Allows you to say a sentenc
 -   <b>init</b>: when TTS is ready - CallBack({ status: int })
 -   <b>stop</b>: when TTS stops - CallBack({ uid: string, interrupted: boolean })
 -   <b>error</b>: when TTS fails - CallBack({ uid: string, code: int })
--   <b>done</b>: when TTS has done (Could include a Blob for SynthToFile)- CallBack({ uid: string, blob: Blob })
+-   <b>done</b>: when TTS has done (Could include a Blob for synthesizeToFile)- CallBack({ uid: string, blob: Blob })
 
 ## Voices' names
 
@@ -73,11 +73,11 @@ Simple tts (text-to-speech) module for Titanium SDK. Allows you to say a sentenc
  - flush: Boolean, FLUSH the speak queque or ADD the text to speak to the queue.
  - blob: Retrive Blob to done event.
  - uid: Utterance ID.
- - filename: File name for synthetizeToFile.
+ - filename: File name for synthesizeToFile.
 
 ## Notes
 
- - There is a limit of bufferlen (4000) characters for each call to speak and synthetizeToFile.
+ - There is a limit of bufferlen (4000) characters for each call to speak and synthesizeToFile.
  - Sometimes after the init event a queque FLUSH could be needed to start speaking (especially if speaking is true).
  
 ## Example
