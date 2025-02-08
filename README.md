@@ -5,6 +5,7 @@ Simple tts (text-to-speech) module for Titanium SDK. Allows you to say a sentenc
 ## Methods
 
 -   <b>init()</b>
+-   <b>init( engine: string )</b> - Init specific TTS Engine if available
 -   <b>speak({ text: string, uid: string, volume: float, pan: float, flush: boolean })</b> - There is a character limit (of 4000 characters) per speak method. The exact maximum allowed length can be read from the bufferlen property.
 -   <b>synthesizeToFile({ text: string, filename: string, uid: string, volume: float, pan: float, blob: boolean })</b>
 -   <b>stop()</b>
@@ -14,6 +15,15 @@ Simple tts (text-to-speech) module for Titanium SDK. Allows you to say a sentenc
 -   <b>initSilent()</b> - Init without events emitter
 -   <b>emitEvents()</b> - Start events emitter
 -   <b>separateSpeaker()</b> - Return new Instance of TTS ( Experimental feature, marked as Deprecated ).
+-   <b>getEngines()</b>
+-   <b>getLanguages()</b>
+-   <b>getEngineList()</b>
+-   <b>getLanguageList()</b>
+-   <b>getEngines</b>
+-   <b>getVoiceList( filter: string )</b>
+-   <b>getVoiceFeatures( voice: string )</b>
+-   <b>setEngine( engine: string )</b> - Deprecated
+
 
 ## Properties
 
