@@ -71,7 +71,7 @@ Simple tts (text-to-speech) module for Titanium SDK. Allows you to say a sentenc
  - pan: Float, Range [ -1 , 1 ], Default 0.
  - pitch: Float, Default 1, lower for lower voice tone, greater to increase.
  - speed: Float, Default 1, 2 double speed, 0.5 half speed.
- - flush: Boolean, Speak Queue FLUSH or ADD.
+ - flush: Boolean, FLUSH the speak queque or ADD the text to speak to the queue.
  - blob: Retrive Blob to done event.
  - uid: Utterance ID.
  - filename: File name for synthetizeToFile.
