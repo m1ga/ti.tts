@@ -18,6 +18,7 @@ Simple tts (text-to-speech) module for Titanium SDK. Allows you to say a sentenc
 -   <b>getEngines()</b>
 -   <b>getLanguages()</b>
 -   <b>getEngineList()</b>
+-   <b>getEnginePackageList()</b> - The Engines' Package Name for init(engine) and setEngine(engine).
 -   <b>getLanguageList()</b>
 -   <b>getEngines()</b>
 -   <b>getVoiceList( filter: string )</b>
@@ -52,6 +53,18 @@ Simple tts (text-to-speech) module for Titanium SDK. Allows you to say a sentenc
   - &lt;lang&gt; and &lt;region&gt; are 2 char ISO codes (i.e. `it`, `de`, `en`)
   - &lt;flags&gt; is a usually 3 char voice description
   - &lt;type&gt; can be `local` (on device voice), `network` (on cloud voice) or `language` (not specified)
+
+## Engines' names
+
+ Engines' names from getEngines and getEngineList are in the format:
+
+    <name> @<package>
+    
+ Where:
+  - &lt;name&gt; is the engine label name
+  - &lt;package&gt; is the engine pakage name for setEngine and init(engine)
+
+ Engines' Package Names List can be retrived from getEnginePackageList().
 
 ## Setup Attributes
 
