@@ -61,7 +61,7 @@ Simple tts (text-to-speech) module for Titanium SDK. Allows you to say a sentenc
     
  Where:
   - &lt;name&gt; is the engine label name
-  - &lt;package&gt; is the engine pakage name for setEngine and init(engine)
+  - &lt;package&gt; is the engine pakage name for setEngine(engine) and init(engine)
 
  Engines' Package Names List can be retrived from getEnginePackageList().
 
