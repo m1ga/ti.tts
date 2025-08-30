@@ -5,7 +5,7 @@ Simple tts (text-to-speech) module for Titanium SDK. Allows you to say a sentenc
 ## Methods
 
 -   <b>init()</b>
--   <b>speak(string)</b>
+-   <b>speak(string)</b> - There is a character limit of 4000 characters per speak method
 -   <b>synthesizeToFile(string)</b>
 
 ## Properties
