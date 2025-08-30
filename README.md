@@ -37,6 +37,10 @@ tts.addEventListener("init", function(e) {
 });
 ```
 
+## Note
+
+Needs Android 21 or higher.
+
 
 ## Author
 
