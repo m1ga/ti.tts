@@ -7,9 +7,6 @@
  */
 package ti.tts;
 
-import java.util.List;
-import java.util.ArrayList;
-
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
@@ -24,6 +21,8 @@ import org.appcelerator.titanium.TiBlob;
 import org.appcelerator.titanium.io.TiBaseFile;
 import org.appcelerator.titanium.io.TiFileFactory;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 
@@ -32,16 +31,15 @@ public class TiTtsModule extends KrollModule {
 
     private static final String LCAT = "TiTtsModule";
     private static final String defaultID = "utteranceID";
+    TextToSpeech tts;
     private String lastBlobId = null;
     private TiBaseFile lastBlobFile;
-    private KrollDict config=null;
-    
-    TextToSpeech tts;
+    private KrollDict config = null;
 
     public TiTtsModule() {
         super();
     }
-    
+
     @Kroll.onAppCreate
     public static void onAppCreate(TiApplication app) {
     }
@@ -50,7 +48,7 @@ public class TiTtsModule extends KrollModule {
     @Deprecated
     @Kroll.method
     public TiTtsModule separateSpeaker() {
-     return new TiTtsModule();
+        return new TiTtsModule();
     }
 
     @SuppressLint("NewApi")
@@ -62,11 +60,11 @@ public class TiTtsModule extends KrollModule {
             if (value != null) {
                 if (tmpVoice.getName().contains(value)) {
                     out += cnc + tmpVoice.getName();
-                    cnc="|";
+                    cnc = "|";
                 }
             } else {
                 out += cnc + tmpVoice.getName();
-                cnc="|";
+                cnc = "|";
             }
         }
         return out;
@@ -156,7 +154,7 @@ public class TiTtsModule extends KrollModule {
             }, engine);
         }
     }
-    
+
     @SuppressLint("NewApi")
     @Kroll.method
     public void initSilent() {
@@ -172,47 +170,49 @@ public class TiTtsModule extends KrollModule {
     public void speak(KrollDict params) {
         String value = params.getString("text");
         String uid = getStringKey(params, "uid", TiTtsModule.defaultID);
-        int mode = getBooleanKey(params,"flush",false) ? TextToSpeech.QUEUE_FLUSH : TextToSpeech.QUEUE_ADD;
-        Bundle bundle = null;
+        int mode = getBooleanKey(params, "flush", false) ? TextToSpeech.QUEUE_FLUSH : TextToSpeech.QUEUE_ADD;
+        Bundle bundle = new Bundle();
         Double vol = getDoubleKey(params, "volume", null);
         Double pan = getDoubleKey(params, "pan", null);
         if ((vol != null) && (pan != null)) {
-         bundle=new Bundle();
-         if (vol != null)
-          bundle.putFloat(TextToSpeech.Engine.KEY_PARAM_VOLUME, vol.floatValue()); // [ from 0.0 to 1.0 ]
-         if (pan != null)
-          bundle.putFloat(TextToSpeech.Engine.KEY_PARAM_PAN, pan.floatValue()); // [ from -1.0 to 1.0 ]
+            if (vol != null)
+                bundle.putFloat(TextToSpeech.Engine.KEY_PARAM_VOLUME, vol.floatValue()); // [ from 0.0 to 1.0 ]
+            if (pan != null)
+                bundle.putFloat(TextToSpeech.Engine.KEY_PARAM_PAN, pan.floatValue()); // [ from -1.0 to 1.0 ]
         }
         tts.speak(value, mode, bundle, uid);
     }
-    
+
     private Double getDoubleKey(KrollDict params, String key) {
         return getDoubleKey(params, key, null);
     }
+
     private Double getDoubleKey(KrollDict params, String key, Double def) {
-        if ((params != null)&&(params.containsKeyAndNotNull(key)))
+        if ((params != null) && (params.containsKeyAndNotNull(key)))
             return params.getDouble(key);
-        if ((config != null)&&(config.containsKeyAndNotNull(key)))
+        if ((config != null) && (config.containsKeyAndNotNull(key)))
             return config.getDouble(key);
         return def;
     }
+
     private String getStringKey(KrollDict params, String key, String def) {
-        if ((params != null)&&(params.containsKeyAndNotNull(key)))
+        if ((params != null) && (params.containsKeyAndNotNull(key)))
             return params.getString(key);
-        if ((config != null)&&(config.containsKeyAndNotNull(key)))
+        if ((config != null) && (config.containsKeyAndNotNull(key)))
             return config.getString(key);
         return def;
     }
+
     private boolean getBooleanKey(KrollDict params, String key, boolean def) {
-        if ((params != null)&&(params.containsKeyAndNotNull(key)))
+        if ((params != null) && (params.containsKeyAndNotNull(key)))
             return params.getBoolean(key);
-        if ((config != null)&&(config.containsKeyAndNotNull(key)))
+        if ((config != null) && (config.containsKeyAndNotNull(key)))
             return config.getBoolean(key);
         return def;
     }
 
     public void setup(KrollDict params) {
-        config=params;
+        config = params;
         if (params.containsKeyAndNotNull("pitch"))
             setPitch(params.getDouble("pitch").floatValue());
         if (params.containsKeyAndNotNull("speed"))
@@ -236,11 +236,11 @@ public class TiTtsModule extends KrollModule {
         String cnc = "";
         for (Locale tmpLang : tts.getAvailableLanguages()) {
             out += cnc + tmpLang.toLanguageTag();
-            cnc="|";
+            cnc = "|";
         }
         return out;
     }
-    
+
     @SuppressLint("NewApi")
     @Kroll.method
     public Object[] getLanguageList() {
@@ -290,13 +290,13 @@ public class TiTtsModule extends KrollModule {
     public void setEngine(String engine) {
         tts.setEngineByPackageName(engine);
     }
-    
+
     @SuppressLint("NewApi")
     @Kroll.getProperty
     public int getBufferlen() {
         return TextToSpeech.getMaxSpeechInputLength();
     }
-    
+
     @SuppressLint("NewApi")
     @Kroll.getProperty
     public boolean getSpeaking() {
@@ -309,24 +309,23 @@ public class TiTtsModule extends KrollModule {
         String value = params.getString("text");
 
         String uid = getStringKey(params, "uid", TiTtsModule.defaultID);
-        String fileName = getStringKey(params, "filename", System.currentTimeMillis() + ".wav");        
-        Bundle bundle = null;
+        String fileName = getStringKey(params, "filename", System.currentTimeMillis() + ".wav");
+        Bundle bundle = new Bundle();
         bundle.putString(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, uid);
         Double vol = getDoubleKey(params, "volume", null);
         Double pan = getDoubleKey(params, "pan", null);
         if ((vol != null) && (pan != null)) {
-         bundle=new Bundle();
-         if (vol != null)
-          bundle.putFloat(TextToSpeech.Engine.KEY_PARAM_VOLUME, vol.floatValue()); // [ from 0.0 to 1.0 ]
-         if (pan != null)
-          bundle.putFloat(TextToSpeech.Engine.KEY_PARAM_PAN, pan.floatValue()); // [ from -1.0 to 1.0 ]
+            if (vol != null)
+                bundle.putFloat(TextToSpeech.Engine.KEY_PARAM_VOLUME, vol.floatValue()); // [ from 0.0 to 1.0 ]
+            if (pan != null)
+                bundle.putFloat(TextToSpeech.Engine.KEY_PARAM_PAN, pan.floatValue()); // [ from -1.0 to 1.0 ]
         }
         try {
             TiBaseFile outfile = TiFileFactory.createTitaniumFile(fileName, true);
             tts.synthesizeToFile(value, bundle, outfile.getNativeFile(), uid);
-            if (getBooleanKey(params,"blob",true)) {
-             lastBlobId = uid;
-             lastBlobFile = outfile;
+            if (getBooleanKey(params, "blob", true)) {
+                lastBlobId = uid;
+                lastBlobFile = outfile;
             }
             return outfile.nativePath();
         } catch (Exception e) {
@@ -338,50 +337,50 @@ public class TiTtsModule extends KrollModule {
     @Kroll.method
     public int emitEvents() {
         return tts.setOnUtteranceProgressListener(new UtteranceProgressListener() {
-                @Override
-                public void onStart(String utteranceId) {
-                    KrollDict kd = new KrollDict();
-                    kd.put("uid", utteranceId);
-                    fireEvent("start", kd);
-                }
+            @Override
+            public void onStart(String utteranceId) {
+                KrollDict kd = new KrollDict();
+                kd.put("uid", utteranceId);
+                fireEvent("start", kd);
+            }
 
-                @Override
-                public void onDone(String utteranceId) {
-                    KrollDict kd = new KrollDict();
-                    kd.put("uid", utteranceId);
-                    if (utteranceId.equals(lastBlobId))
-                     kd.put("blob", TiBlob.blobFromFile(lastBlobFile));
-                    lastBlobFile=null;
-                    lastBlobId=null;
-                    fireEvent("done", kd);
-                }
+            @Override
+            public void onDone(String utteranceId) {
+                KrollDict kd = new KrollDict();
+                kd.put("uid", utteranceId);
+                if (utteranceId.equals(lastBlobId))
+                    kd.put("blob", TiBlob.blobFromFile(lastBlobFile));
+                lastBlobFile = null;
+                lastBlobId = null;
+                fireEvent("done", kd);
+            }
 
-                @Override
-                public void onError(String utteranceId, int code) {
-                    KrollDict kd = new KrollDict();
-                    kd.put("uid", utteranceId);
-                    kd.put("code", code);
-                    fireEvent("error", kd);
-                }
+            @Override
+            public void onError(String utteranceId, int code) {
+                KrollDict kd = new KrollDict();
+                kd.put("uid", utteranceId);
+                kd.put("code", code);
+                fireEvent("error", kd);
+            }
 
-                @Override
-                @Deprecated
-                public void onError(String utteranceId) {
-                    KrollDict kd = new KrollDict();
-                    kd.put("uid", utteranceId);
-                    fireEvent("error", kd);
-                }
+            @Override
+            @Deprecated
+            public void onError(String utteranceId) {
+                KrollDict kd = new KrollDict();
+                kd.put("uid", utteranceId);
+                fireEvent("error", kd);
+            }
 
-                @Override
-                public void onStop(String utteranceId, boolean interrupted) {
-                    KrollDict kd = new KrollDict();
-                    kd.put("uid", utteranceId);
-                    kd.put("interrupted", interrupted);
-                    fireEvent("stop", kd);
-                }
-            });
+            @Override
+            public void onStop(String utteranceId, boolean interrupted) {
+                KrollDict kd = new KrollDict();
+                kd.put("uid", utteranceId);
+                kd.put("interrupted", interrupted);
+                fireEvent("stop", kd);
+            }
+        });
     }
-    
+
     @SuppressLint("NewApi")
     @Kroll.method
     public void shutdown() {
